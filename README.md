@@ -119,6 +119,7 @@ docker run --rm -p 8081:8080 -e Api__BaseUrl=http://host.docker.internal:5238 ra
 ### Screenshots
 - [ ] Add screenshots of the Organiser dashboard, event page with banner, and My Results.
 - [ ] <img width="1895" height="903" alt="organiser dashboard" src="https://github.com/user-attachments/assets/409ed796-a716-4074-95a6-362c73904170" />
+<img width="1902" height="915" alt="SWAGGER" src="https://github.com/user-attachments/assets/260847e3-8319-4235-95b9-0c8b9f88eb21" />
 
 
 ## CI/CD
