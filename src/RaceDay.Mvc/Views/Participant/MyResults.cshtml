@@ -1,0 +1,48 @@
+@model List<RaceResult>
+@{
+    ViewData["Title"] = "My results";
+}
+<h1 class="rd-page-title">My <span>results</span></h1>
+
+@if (Model.Count == 0)
+{
+    <div class="rd-panel text-center">
+        <i class="bi bi-trophy display-4 text-muted"></i>
+        <h3 class="mt-2">No results yet</h3>
+        <p class="text-muted mb-0">Your finish times appear here after an organiser publishes the results of an event you entered.</p>
+    </div>
+}
+else
+{
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="rd-stat">
+                <div class="rd-stat-value">@Model.Count</div>
+                <div class="rd-stat-label">Races completed</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table rd-table align-middle">
+            <thead>
+                <tr><th>Event</th><th>Date</th><th>Category</th><th>Finish time</th><th>Position</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var r in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold">@r.EventName</td>
+                        <td>@ViewHelpers.FormatShortDate(r.EventDate)</td>
+                        <td>@r.CategoryName</td>
+                        <td class="fw-semibold">@ViewHelpers.FormatTime(r.FinishTime)</td>
+                        <td>
+                            <span class="rd-position">@ViewHelpers.Ordinal(r.FinishPosition)</span>
+                            <span class="text-muted small">out of @r.TotalFinishers finishers</span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

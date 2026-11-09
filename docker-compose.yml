@@ -1,0 +1,45 @@
+# Starts the whole RaceDay stack with one command:  docker compose up --build
+#   SQL Server  -> localhost:1433
+#   API         -> http://localhost:5238/swagger
+#   MVC web app -> http://localhost:8081
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${SA_PASSWORD:-RaceDay_Str0ng!Pass}
+    ports:
+      - "1433:1433"
+    volumes:
+      - raceday-sql:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -Q \"SELECT 1\" || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  api:
+    build: ./src/RaceDay.Api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=db;Database=RaceDayDB;User Id=sa;Password=${SA_PASSWORD:-RaceDay_Str0ng!Pass};TrustServerCertificate=True"
+      Registration__OrganiserCode: ${ORGANISER_CODE:-RACEDAY-ORG-2026}
+      AzureBlobStorage__ConnectionString: ${AZURE_STORAGE_CONNECTION_STRING:-}
+      AzureBlobStorage__ContainerName: ${AZURE_STORAGE_CONTAINER:-raceday-images}
+    ports:
+      - "5238:8080"
+
+  mvc:
+    build: ./src/RaceDay.Mvc
+    depends_on:
+      - api
+    environment:
+      Api__BaseUrl: http://api:8080
+    ports:
+      - "8081:8080"
+
+volumes:
+  raceday-sql:

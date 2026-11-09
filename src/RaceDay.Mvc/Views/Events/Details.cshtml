@@ -1,0 +1,111 @@
+@model EventDetailsViewModel
+@{
+    var ev = Model.Event;
+    ViewData["Title"] = ev.Name;
+}
+<div class="mb-3"><a href="javascript:history.back()" class="text-decoration-none"><i class="bi bi-arrow-left"></i> Back</a></div>
+
+@if (!string.IsNullOrEmpty(ev.BannerImageUrl))
+{
+    <img src="@ev.BannerImageUrl" class="rd-banner mb-4" alt="Banner for @ev.Name" />
+}
+else
+{
+    <div class="rd-banner-placeholder @ViewHelpers.TypeCss(ev.EventType) mb-4"><i class="bi @ViewHelpers.TypeIcon(ev.EventType)"></i></div>
+}
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="rd-panel">
+            <span class="badge rd-type @ViewHelpers.TypeCss(ev.EventType)"><i class="bi @ViewHelpers.TypeIcon(ev.EventType)"></i> @ev.EventType</span>
+            <span class="badge rd-distance">@ViewHelpers.FormatDistance(ev.DistanceKm)</span>
+            <h1 class="rd-page-title mt-2">@ev.Name</h1>
+            <p style="white-space: pre-line">@(string.IsNullOrWhiteSpace(ev.Description) ? "No description provided." : ev.Description)</p>
+        </div>
+
+        <div class="rd-panel">
+            <h3>Categories</h3>
+            @if (ev.Categories.Count == 0)
+            {
+                <p class="text-muted mb-0">The organiser hasn't added any categories yet.</p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table rd-table mb-0">
+                        <thead><tr><th>Category</th><th>Details</th></tr></thead>
+                        <tbody>
+                            @foreach (var c in ev.Categories)
+                            {
+                                <tr><td>@c.Name</td><td class="text-muted">@ViewHelpers.CategoryDetail(c)</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="rd-panel">
+            <h3>Event info</h3>
+            <ul class="rd-meta list-unstyled mb-0">
+                <li><i class="bi bi-calendar3"></i> @ViewHelpers.FormatDate(ev.EventDate)</li>
+                <li><i class="bi bi-geo-alt-fill"></i> @ev.Location</li>
+                <li><i class="bi bi-signpost-split"></i> @ViewHelpers.FormatDistance(ev.DistanceKm)</li>
+                <li><i class="bi bi-person-badge"></i> Organised by @ev.OrganiserName</li>
+                <li><i class="bi bi-people-fill"></i> @ev.EnrolmentCount entered</li>
+            </ul>
+        </div>
+
+        @if (Model.IsParticipant)
+        {
+            <div class="rd-panel">
+                <h3>Enter this event</h3>
+                @if (Model.MyEnrolment is not null)
+                {
+                    <div class="alert alert-success mb-0">
+                        You're entered in <strong>@Model.MyEnrolment.CategoryName</strong>.
+                        <div class="mt-2"><partial name="_StatusBadge" model="Model.MyEnrolment.Status" /></div>
+                    </div>
+                }
+                else if (!Model.IsUpcoming)
+                {
+                    <div class="alert alert-secondary mb-0">This event has already taken place.</div>
+                }
+                else if (ev.Categories.Count == 0)
+                {
+                    <div class="alert alert-warning mb-0">Entries aren't open yet.</div>
+                }
+                else
+                {
+                    <form asp-controller="Events" asp-action="Enrol" method="post">
+                        <input type="hidden" name="eventId" value="@ev.EventId" />
+                        <label for="categoryId" class="form-label">Choose your category</label>
+                        <select id="categoryId" name="categoryId" class="form-select mb-3" required>
+                            <option value="">Select a category...</option>
+                            @foreach (var c in ev.Categories)
+                            {
+                                <option value="@c.CategoryId">@c.Name</option>
+                            }
+                        </select>
+                        <button type="submit" class="btn btn-rd w-100"><i class="bi bi-check2-circle"></i> Enter event</button>
+                    </form>
+                }
+            </div>
+        }
+
+        @if (Model.IsOwner)
+        {
+            <div class="rd-panel">
+                <h3>Manage</h3>
+                <div class="d-grid gap-2">
+                    <a asp-controller="Organiser" asp-action="EditEvent" asp-route-id="@ev.EventId" class="btn btn-outline-rd"><i class="bi bi-pencil"></i> Edit event</a>
+                    <a asp-controller="Organiser" asp-action="Categories" asp-route-eventId="@ev.EventId" class="btn btn-outline-rd"><i class="bi bi-tags"></i> Categories</a>
+                    <a asp-controller="Organiser" asp-action="Enrolments" asp-route-eventId="@ev.EventId" class="btn btn-outline-rd"><i class="bi bi-people"></i> Enrolments</a>
+                    <a asp-controller="Organiser" asp-action="Results" asp-route-eventId="@ev.EventId" class="btn btn-outline-rd"><i class="bi bi-stopwatch"></i> Results</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>

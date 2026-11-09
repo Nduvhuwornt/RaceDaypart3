@@ -1,0 +1,77 @@
+@model CategoriesViewModel
+@{
+    ViewData["Title"] = "Categories";
+    var ev = Model.Event;
+}
+<div class="mb-2"><a asp-action="Events" class="text-decoration-none"><i class="bi bi-arrow-left"></i> My events</a></div>
+<h1 class="rd-page-title">Categories <span>&middot; @ev.Name</span></h1>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="rd-panel">
+            <h3>Current categories</h3>
+            @if (ev.Categories.Count == 0)
+            {
+                <p class="text-muted mb-0">No categories yet. Add one so participants can choose how to enter.</p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table rd-table align-middle mb-0">
+                        <thead><tr><th>Category</th><th>Details</th><th></th></tr></thead>
+                        <tbody>
+                            @foreach (var c in ev.Categories)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">@c.Name</td>
+                                    <td class="text-muted">@ViewHelpers.CategoryDetail(c)</td>
+                                    <td class="text-end text-nowrap">
+                                        <a asp-action="EditCategory" asp-route-id="@c.CategoryId" asp-route-eventId="@ev.EventId" class="btn btn-sm btn-outline-rd"><i class="bi bi-pencil"></i></a>
+                                        <form asp-action="DeleteCategory" asp-route-id="@c.CategoryId" asp-route-eventId="@ev.EventId" method="post" class="d-inline" data-confirm="Delete the category '@c.Name'?">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="rd-panel">
+            <h3>Add a category</h3>
+            <form asp-action="AddCategory" asp-route-eventId="@ev.EventId" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+                <div class="mb-3">
+                    <label asp-for="NewCategory.Name" class="form-label"></label>
+                    <input asp-for="NewCategory.Name" class="form-control" placeholder="e.g. Under 20, Senior, 21km" />
+                    <span asp-validation-for="NewCategory.Name" class="text-danger"></span>
+                </div>
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label asp-for="NewCategory.MinAge" class="form-label"></label>
+                        <input asp-for="NewCategory.MinAge" type="number" min="0" max="120" class="form-control" />
+                        <span asp-validation-for="NewCategory.MinAge" class="text-danger"></span>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label asp-for="NewCategory.MaxAge" class="form-label"></label>
+                        <input asp-for="NewCategory.MaxAge" type="number" min="0" max="120" class="form-control" />
+                        <span asp-validation-for="NewCategory.MaxAge" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="NewCategory.DistanceKm" class="form-label"></label>
+                    <input asp-for="NewCategory.DistanceKm" type="number" step="0.1" min="0.1" class="form-control" />
+                    <span asp-validation-for="NewCategory.DistanceKm" class="text-danger"></span>
+                </div>
+                <button type="submit" class="btn btn-rd w-100"><i class="bi bi-plus-circle"></i> Add category</button>
+            </form>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

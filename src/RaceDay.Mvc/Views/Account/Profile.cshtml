@@ -1,0 +1,54 @@
+@model ProfileViewModel
+@{
+    ViewData["Title"] = "My profile";
+}
+<h1 class="rd-page-title">My <span>profile</span></h1>
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="rd-panel text-center">
+            @if (!string.IsNullOrEmpty(Model.ProfilePictureUrl))
+            {
+                <img src="@Model.ProfilePictureUrl" class="rd-avatar mx-auto mb-3" alt="Profile picture of @Model.FullName" id="avatarPreview" />
+            }
+            else
+            {
+                <div class="rd-avatar mx-auto mb-3" id="avatarInitials">@ViewHelpers.Initials(Model.FullName)</div>
+            }
+            <h3 class="mb-0">@Model.FullName</h3>
+            <span class="badge rd-role @(Model.Role == "Organiser" ? "rd-role-organiser" : "rd-role-participant") mb-3">@Model.Role</span>
+
+            <form asp-action="UploadPicture" method="post" enctype="multipart/form-data" class="text-start">
+                <label for="picture" class="form-label">Profile picture</label>
+                <input type="file" name="picture" id="picture" class="form-control mb-2" accept=".jpg,.jpeg,.png,.webp,.gif" required />
+                <div class="form-text mb-2">JPG, PNG, WEBP or GIF, up to 5 MB.</div>
+                <button type="submit" class="btn btn-outline-rd w-100"><i class="bi bi-upload"></i> Upload picture</button>
+            </form>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="rd-panel">
+            <h3>Personal details</h3>
+            <form asp-action="Profile" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+                <div class="mb-3">
+                    <label asp-for="FullName" class="form-label"></label>
+                    <input asp-for="FullName" class="form-control" />
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input class="form-control" value="@Model.Email" disabled />
+                </div>
+                <div class="mb-3">
+                    <label asp-for="PhoneNumber" class="form-label"></label>
+                    <input asp-for="PhoneNumber" class="form-control" />
+                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                </div>
+                <button type="submit" class="btn btn-rd">Save changes</button>
+            </form>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

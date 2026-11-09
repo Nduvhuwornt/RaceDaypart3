@@ -1,0 +1,71 @@
+@model ResultsViewModel
+@{
+    ViewData["Title"] = "Results";
+    var ev = Model.Event;
+    var pending = Model.Enrolments.Where(e => !e.HasResult).ToList();
+}
+<div class="mb-2"><a asp-action="Events" class="text-decoration-none"><i class="bi bi-arrow-left"></i> My events</a></div>
+<h1 class="rd-page-title">Results <span>&middot; @ev.Name</span></h1>
+
+<div class="rd-panel">
+    <h3>Capture and publish results</h3>
+    @if (!Model.EventHasHappened)
+    {
+        <div class="alert alert-info mb-0">Results can be captured once the event has taken place (@ViewHelpers.FormatDate(ev.EventDate)).</div>
+    }
+    else if (pending.Count == 0)
+    {
+        <p class="text-muted mb-0">@(Model.Enrolments.Count == 0 ? "No one entered this event." : "Every enrolled participant has a result.")</p>
+    }
+    else
+    {
+        <p class="text-muted">Enter the finish time as <strong>hh:mm:ss</strong> and the finishing position, then save to publish.</p>
+        @foreach (var e in pending)
+        {
+            <form asp-action="SaveResult" method="post" class="row g-2 align-items-center border-bottom py-2">
+                <input type="hidden" name="enrolmentId" value="@e.EnrolmentId" />
+                <input type="hidden" name="eventId" value="@ev.EventId" />
+                <div class="col-md-4">
+                    <div class="fw-semibold">@e.ParticipantName</div>
+                    <div class="text-muted small">@e.CategoryName</div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <input name="finishTime" class="form-control" placeholder="hh:mm:ss" pattern="\d{1,2}:\d{2}:\d{2}" title="Format hh:mm:ss, e.g. 00:52:14" required />
+                </div>
+                <div class="col-6 col-md-2">
+                    <input name="finishPosition" type="number" min="1" class="form-control" placeholder="Position" required />
+                </div>
+                <div class="col-md-3 text-md-end">
+                    <button type="submit" class="btn btn-rd"><i class="bi bi-check2"></i> Save result</button>
+                </div>
+            </form>
+        }
+    }
+</div>
+
+<div class="rd-panel">
+    <h3>Published results</h3>
+    @if (Model.Results.Count == 0)
+    {
+        <p class="text-muted mb-0">No results published yet.</p>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table rd-table align-middle mb-0">
+                <thead><tr><th>Position</th><th>Participant</th><th>Category</th><th>Finish time</th></tr></thead>
+                <tbody>
+                    @foreach (var r in Model.Results)
+                    {
+                        <tr>
+                            <td><span class="rd-position">@ViewHelpers.Ordinal(r.FinishPosition)</span></td>
+                            <td class="fw-semibold">@r.ParticipantName</td>
+                            <td>@r.CategoryName</td>
+                            <td>@ViewHelpers.FormatTime(r.FinishTime)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

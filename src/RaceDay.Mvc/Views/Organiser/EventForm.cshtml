@@ -1,0 +1,66 @@
+@model EventFormViewModel
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    var isNew = Model.EventId == 0;
+}
+<h1 class="rd-page-title">@(isNew ? "Create" : "Edit") <span>event</span></h1>
+
+<div class="rd-panel">
+    <form asp-action="@(isNew ? "CreateEvent" : "EditEvent")" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+        <input type="hidden" asp-for="EventId" />
+        <input type="hidden" asp-for="BannerImageUrl" />
+
+        <div class="row">
+            <div class="col-md-8 mb-3">
+                <label asp-for="Name" class="form-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="col-md-4 mb-3">
+                <label asp-for="EventType" class="form-label"></label>
+                <select asp-for="EventType" asp-items="@(new SelectList(EventTypes.All))" class="form-select"></select>
+                <span asp-validation-for="EventType" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label"></label>
+            <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="row">
+            <div class="col-md-5 mb-3">
+                <label asp-for="EventDate" class="form-label"></label>
+                <input asp-for="EventDate" type="datetime-local" class="form-control" />
+                <span asp-validation-for="EventDate" class="text-danger"></span>
+            </div>
+            <div class="col-md-5 mb-3">
+                <label asp-for="Location" class="form-label"></label>
+                <input asp-for="Location" class="form-control" />
+                <span asp-validation-for="Location" class="text-danger"></span>
+            </div>
+            <div class="col-md-2 mb-3">
+                <label asp-for="DistanceKm" class="form-label"></label>
+                <input asp-for="DistanceKm" type="number" step="0.1" min="0.1" class="form-control" />
+                <span asp-validation-for="DistanceKm" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="BannerFile" class="form-label"></label>
+            <input asp-for="BannerFile" type="file" class="form-control" accept=".jpg,.jpeg,.png,.webp,.gif" data-preview="#bannerPreview" />
+            <div class="form-text">JPG, PNG, WEBP or GIF, up to 5 MB. Shown on the event page.</div>
+            <img id="bannerPreview" class="rd-preview @(string.IsNullOrEmpty(Model.BannerImageUrl) ? "d-none" : "")" src="@Model.BannerImageUrl" alt="Banner preview" />
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-rd">@(isNew ? "Create event" : "Save changes")</button>
+            <a asp-action="Events" class="btn btn-outline-rd">Cancel</a>
+        </div>
+    </form>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

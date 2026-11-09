@@ -1,0 +1,75 @@
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+<div class="rd-hero">
+    <h1>Organiser <span>dashboard</span></h1>
+    <p>Your events, entries and upcoming race dates at a glance.</p>
+    <a asp-action="CreateEvent" class="btn btn-rd mt-3"><i class="bi bi-plus-circle"></i> Create event</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-4">
+        <div class="rd-stat"><div class="rd-stat-value">@Model.TotalEvents</div><div class="rd-stat-label">Events created</div></div>
+    </div>
+    <div class="col-sm-4">
+        <div class="rd-stat rd-stat-lime"><div class="rd-stat-value">@Model.TotalEnrolments</div><div class="rd-stat-label">Total enrolments</div></div>
+    </div>
+    <div class="col-sm-4">
+        <div class="rd-stat rd-stat-navy"><div class="rd-stat-value">@Model.Upcoming.Count</div><div class="rd-stat-label">Upcoming events</div></div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="rd-panel">
+            <h3>Upcoming dates</h3>
+            @if (Model.Upcoming.Count == 0)
+            {
+                <p class="text-muted mb-0">No upcoming events. Create one to get started.</p>
+            }
+            else
+            {
+                <ul class="list-unstyled mb-0">
+                    @foreach (var ev in Model.Upcoming.Take(6))
+                    {
+                        <li class="mb-3">
+                            <div class="fw-semibold">@ev.Name</div>
+                            <div class="text-muted small"><i class="bi bi-calendar3"></i> @ViewHelpers.FormatDate(ev.EventDate)</div>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="rd-panel">
+            <h3>Enrolments per event</h3>
+            @if (Model.Events.Count == 0)
+            {
+                <p class="text-muted mb-0">You haven't created any events yet.</p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table rd-table align-middle mb-0">
+                        <thead><tr><th>Event</th><th>Date</th><th class="text-center">Enrolments</th><th></th></tr></thead>
+                        <tbody>
+                            @foreach (var ev in Model.Events.OrderBy(e => e.EventDate))
+                            {
+                                <tr>
+                                    <td class="fw-semibold">@ev.Name</td>
+                                    <td>@ViewHelpers.FormatShortDate(ev.EventDate)</td>
+                                    <td class="text-center"><span class="badge rd-distance">@ev.EnrolmentCount</span></td>
+                                    <td class="text-end">
+                                        <a asp-action="Enrolments" asp-route-eventId="@ev.EventId" class="btn btn-sm btn-outline-rd">Enrolments</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
