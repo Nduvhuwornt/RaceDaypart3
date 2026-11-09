@@ -127,7 +127,8 @@ docker run --rm -p 8081:8080 -e Api__BaseUrl=http://host.docker.internal:5238 ra
 ## CI/CD
 - `ci.yml` restores, builds the API and MVC projects, runs all unit tests, then builds both Docker images on every push.
 - `validate-docs.yml` checks the `/docs` folder and required files exist.
-- [ ] Add screenshot of the green build here.
+- [<img width="1530" height="881" alt="workflow" src="https://github.com/user-attachments/assets/8e52a480-fa1d-42d4-83e2-e1705f770cca" />
+ ] Add screenshot of the green build here.
 
 ## Video
 - [ ] Add the unlisted YouTube link here (Part 3: demo the full application, explain the MVC structure, Blob Storage integration and Docker setup; your own voice, no AI voiceover).
