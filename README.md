@@ -118,6 +118,8 @@ docker run --rm -p 8081:8080 -e Api__BaseUrl=http://host.docker.internal:5238 ra
 
 ### Screenshots
 - [ ] Add screenshots of the Organiser dashboard, event page with banner, and My Results.
+- [ ] <img width="1895" height="903" alt="organiser dashboard" src="https://github.com/user-attachments/assets/409ed796-a716-4074-95a6-362c73904170" />
+
 
 ## CI/CD
 - `ci.yml` restores, builds the API and MVC projects, runs all unit tests, then builds both Docker images on every push.
